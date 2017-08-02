@@ -1,0 +1,24 @@
+org:
+    quartz:
+        scheduler:
+            instanceId: AUTO
+            instanceName: kingbbode-example
+            makeSchedulerThreadDaemon : true
+            interruptJobsOnShutdown  : true
+        jobStore:
+            clusterCheckinInterval: 20000
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+            misfireThreshold: 60000
+            tablePrefix: QRTZ_
+            useProperties: false
+        threadPool:
+            threadCount: 5
+            makeThreadsDaemons : true
+            
+spring:
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        password: 
+        url: jdbc:mysql://localhost/test
+        username: root
