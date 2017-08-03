@@ -36,6 +36,9 @@ public class ExampleJobConfiguration {
 
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
+    
+    
+    
 
     public ExampleJobConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         this.jobBuilderFactory = jobBuilderFactory;
@@ -53,7 +56,7 @@ public class ExampleJobConfiguration {
     @Bean
     public JobDetailFactoryBean exampleJob1Schedule() {
         return BatchHelper.jobDetailFactoryBeanBuilder()
-                .jobName(JOB_NAME)
+                .job(exampleJob1())
                 .build();
     }
     

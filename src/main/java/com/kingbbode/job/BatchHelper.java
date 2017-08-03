@@ -11,6 +11,7 @@ package com.kingbbode.job;
  */
 
 import org.quartz.JobDataMap;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -23,7 +24,7 @@ import java.util.*;
  * Spring Batch, Quartz 설정을 도와주는 Helper Class.
  */
 public class BatchHelper {
-    private static final String JOB_NAME_KEY = "jobName";
+    private static final String JOB_NAME_KEY = "job";
     private static final String JOB_PARAMETERS_NAME_KEY = "jobParameters";
     private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY);
 
@@ -78,10 +79,10 @@ public class BatchHelper {
         }
 
         /**
-         * @param jobName Spring Batch Job Name
+         * @param job Spring Batch Job For Name
          */
-        public JobDetailFactoryBeanBuilder jobName(String jobName) {
-            this.map.put(JOB_NAME_KEY, jobName);
+        public JobDetailFactoryBeanBuilder job(Job job) {
+            this.map.put(JOB_NAME_KEY, job.getName());
             return this;
         }
 
