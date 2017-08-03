@@ -13,8 +13,14 @@ package com.kingbbode.config;
 import com.kingbbode.property.QuartzProperties;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.spi.JobFactory;
+import org.quartz.spi.TriggerFiredBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.SmartLifecycle;
@@ -22,12 +28,45 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 @Configuration
 @EnableConfigurationProperties(QuartzProperties.class)
+@EnableBatchProcessing
 public class BatchConfiguration {
+
+    /**
+     * JobRegistry 에 Job 을 자동으로 등록하기 위한 설정.
+     *
+     * @param jobRegistry ths Spring Batch Job Registry
+     * @return JobRegistry BeanPostProcessor
+     */
+    @Bean
+    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
+        JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
+        jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry);
+        return jobRegistryBeanPostProcessor;
+    }
+    
+    /**
+     * Quartz Schedule Job 에 의존성 주입
+     * 
+     * @param beanFactory application context beanFactory
+     * @return the job factory
+     */
+    @Bean
+    public JobFactory jobFactory(AutowireCapableBeanFactory beanFactory) {
+        return new SpringBeanJobFactory(){
+            @Override
+            protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
+                Object job = super.createJobInstance(bundle);
+                beanFactory.autowireBean(job);
+                return job;
+            }
+        };
+    }
     
     /**
      * Scheduler 전체를 관리하는 Manager.
@@ -42,6 +81,8 @@ public class BatchConfiguration {
 
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
 
+        //Register JobFactory
+        factory.setJobFactory(jobFactory(null));
         //Graceful Shutdown 을 위한 설정으로 Job 이 완료될 때까지 Shutdown 을 대기하는 설정
         factory.setWaitForJobsToCompleteOnShutdown(true);
         //Job Detail 데이터 Overwrite 유무
