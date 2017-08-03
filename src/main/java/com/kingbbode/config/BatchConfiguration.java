@@ -32,6 +32,8 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 @EnableConfigurationProperties(QuartzProperties.class)
 @EnableBatchProcessing
@@ -77,12 +79,12 @@ public class BatchConfiguration {
      * @throws Exception the exception
      */
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(DataSource datasource, QuartzProperties quartzProperties) throws Exception {
+    public SchedulerFactoryBean schedulerFactoryBean(DataSource datasource, QuartzProperties quartzProperties, JobFactory jobFactory, Trigger[] registryTrigger) throws Exception {
 
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
 
         //Register JobFactory
-        factory.setJobFactory(jobFactory(null));
+        factory.setJobFactory(jobFactory);
         //Graceful Shutdown 을 위한 설정으로 Job 이 완료될 때까지 Shutdown 을 대기하는 설정
         factory.setWaitForJobsToCompleteOnShutdown(true);
         //Job Detail 데이터 Overwrite 유무
@@ -92,7 +94,7 @@ public class BatchConfiguration {
         //Schedule 관리를 Spring Datasource 에 위임
         factory.setDataSource(datasource);
         //Register Triggers
-        factory.setTriggers(registryTrigger(null));
+        factory.setTriggers(registryTrigger);
 
         return factory;
     }
@@ -103,10 +105,8 @@ public class BatchConfiguration {
      * @return the trigger [ ]
      */
     @Bean
-    public Trigger[] registryTrigger(DefaultListableBeanFactory beanFactory) {
-        return Arrays.stream(beanFactory.getBeanNamesForType(CronTriggerFactoryBean.class))
-                .map(triggerName -> beanFactory.getBean(triggerName, CronTriggerFactoryBean.class).getObject())
-                .toArray(Trigger[]::new);
+    public Trigger[] registryTrigger(List<CronTriggerFactoryBean> cronTriggerFactoryBeanList) {
+        return cronTriggerFactoryBeanList.stream().map(CronTriggerFactoryBean::getObject).toArray(Trigger[]::new);
     }
 
     /**
