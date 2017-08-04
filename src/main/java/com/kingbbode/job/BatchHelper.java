@@ -56,7 +56,7 @@ public class BatchHelper {
      * @return Spring Batch JobParameters
      */
     public static JobParameters getJobParameters(JobDataMap jobDataMap){
-        return new JobParametersBuilder((JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY)).addDate("executeDate", new Date()).toJobParameters();
+        return new JobParametersBuilder((JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY)).addLong("timestamp", System.currentTimeMillis()).toJobParameters();
     }
 
     /**
