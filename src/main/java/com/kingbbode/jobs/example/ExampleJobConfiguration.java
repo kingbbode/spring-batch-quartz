@@ -1,4 +1,4 @@
-package com.kingbbode.job.example; 
+package com.kingbbode.jobs.example;
 /*
  * Created By Kingbbode
  * blog : http://kingbbode.github.io
@@ -9,7 +9,7 @@ package com.kingbbode.job.example;
  * kingbbode                2017-08-02      
  */
 
-import com.kingbbode.job.BatchHelper;
+import com.kingbbode.jobs.BatchHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;

@@ -1,4 +1,4 @@
-package com.kingbbode.job; 
+package com.kingbbode.jobs;
 
 /*
  * Created By Kingbbode

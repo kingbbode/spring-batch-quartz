@@ -1,4 +1,4 @@
-package com.kingbbode.job; 
+package com.kingbbode.jobs;
 
 /*
  * Created By Kingbbode
@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobLocator;
