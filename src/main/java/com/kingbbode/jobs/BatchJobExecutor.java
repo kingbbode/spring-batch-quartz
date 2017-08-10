@@ -48,7 +48,7 @@ public class BatchJobExecutor implements org.quartz.Job {
         try {
             String jobName = BatchHelper.getJobName(context.getMergedJobDataMap());
             log.info("[{}] started.", jobName);
-            JobParameters jobParameters = BatchHelper.getJobParameters(context.getMergedJobDataMap());
+            JobParameters jobParameters = BatchHelper.getJobParameters(context);
             jobLauncher.run(jobLocator.getJob(jobName), jobParameters);
             log.info("[{}] completed.", jobName);
         } catch (NoSuchJobException | JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {

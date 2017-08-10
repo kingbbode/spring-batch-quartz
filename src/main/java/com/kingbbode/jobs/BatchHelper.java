@@ -11,6 +11,8 @@ package com.kingbbode.jobs;
  */
 
 import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.SchedulerException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
@@ -26,6 +28,8 @@ import java.util.*;
 public class BatchHelper {
     private static final String JOB_NAME_KEY = "job";
     private static final String JOB_PARAMETERS_NAME_KEY = "jobParameters";
+    private static final String JOB_PARAMETERS_QUARTZ_KEY = "quartz";
+    private static final String TOKEN = "jobParameters";
     private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY);
 
     public static JobDetailFactoryBeanBuilder jobDetailFactoryBeanBuilder() {
@@ -52,11 +56,15 @@ public class BatchHelper {
      * Spring Batch Job 은 Job Name 과 Job Parameter 로 동일 잡을 확인하므로, 
      * 실행 시간을 적재하여 새로운 Job Parameter 를 생성하여 반환.
      * 
-     * @param jobDataMap quartz JobDataMap
+     * @param context quartz JobExecutionContext
      * @return Spring Batch JobParameters
      */
-    public static JobParameters getJobParameters(JobDataMap jobDataMap){
-        return new JobParametersBuilder((JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY)).addLong("timestamp", System.currentTimeMillis()).toJobParameters();
+    public static JobParameters getJobParameters(JobExecutionContext context) throws SchedulerException {
+        JobDataMap jobDataMap = context.getMergedJobDataMap();
+        return new JobParametersBuilder((JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY))
+                .addString(JOB_PARAMETERS_QUARTZ_KEY, context.getScheduler().getSchedulerName() + TOKEN + context.getJobDetail().getKey().getGroup() + TOKEN + context.getJobDetail().getKey().getName())
+                .addLong("timestamp", System.currentTimeMillis())
+                .toJobParameters();
     }
 
     /**
