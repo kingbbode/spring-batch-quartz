@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobLocator;
@@ -51,8 +52,8 @@ public class BatchJobExecutor implements org.quartz.Job {
             JobParameters jobParameters = BatchHelper.getJobParameters(context);
             jobLauncher.run(jobLocator.getJob(jobName), jobParameters);
             log.info("[{}] completed.", jobName);
-        } catch (NoSuchJobException | JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {
-            log.error("job execution exception!");
+        } catch (NoSuchJobException | JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException | JobParametersInvalidException | SchedulerException e) {
+            log.error("job execution exception! - {}", e.getCause());
             throw new JobExecutionException();
         }
     }
