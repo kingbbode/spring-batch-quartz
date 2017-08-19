@@ -36,7 +36,6 @@ import java.util.List;
 @EnableConfigurationProperties(QuartzProperties.class)
 @EnableBatchProcessing
 public class BatchConfiguration {
-
     /**
      * JobRegistry 에 Job 을 자동으로 등록하기 위한 설정.
      *
@@ -81,6 +80,7 @@ public class BatchConfiguration {
 
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
 
+        factory.setSchedulerName("SampleProject-0.0.1");
         //Register JobFactory
         factory.setJobFactory(jobFactory);
         //Graceful Shutdown 을 위한 설정으로 Job 이 완료될 때까지 Shutdown 을 대기하는 설정
