@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -78,7 +79,7 @@ public class QuartzProperties {
     }
     
     private void findProperties(String prefix, Object object, Properties properties) {
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !field.isSynthetic())
+        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> Modifier.isStatic(field.getModifiers()))
                 .forEach(field -> {
                     field.setAccessible(true);
                     try {
