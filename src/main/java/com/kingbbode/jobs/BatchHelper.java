@@ -29,7 +29,7 @@ public class BatchHelper {
     private static final String JOB_NAME_KEY = "job";
     private static final String JOB_PARAMETERS_NAME_KEY = "jobParameters";
     private static final String JOB_PARAMETERS_QUARTZ_KEY = "quartz";
-    private static final String TOKEN = "jobParameters";
+    private static final String TOKEN = "|";
     private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY);
 
     public static JobDetailFactoryBeanBuilder jobDetailFactoryBeanBuilder() {
