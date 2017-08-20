@@ -52,8 +52,6 @@ public class QuartzProperties {
         private String instanceName;
         private String makeSchedulerThreadDaemon = DEFAULT_SCHEDULER_MAKE_SCHEDULER_TREAD_DAEMON;
         private String interruptJobsOnShutdown = DEFAULT_SCHEDULER_INTERRUPT_JOBS_ON_SHUTDOWN;
-        private String schedulerName;
-        private String schdulerVersion;
     }
 
     @Setter
