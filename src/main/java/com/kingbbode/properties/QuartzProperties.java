@@ -79,7 +79,7 @@ public class QuartzProperties {
     }
     
     private void findProperties(String prefix, Object object, Properties properties) {
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> Modifier.isStatic(field.getModifiers()))
+        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .forEach(field -> {
                     field.setAccessible(true);
                     try {
