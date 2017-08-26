@@ -89,11 +89,15 @@ public class QuartzProperties {
     }
 
     private void putStringProperties(String prefix, Object object, Properties properties, Field field) throws IllegalAccessException {
-        if(String.class == field.getType()){
-            properties.put(prefix + "." + field.getName(), field.get(object));
+        Object value = field.get(object);
+        if(value == null) {
             return;
         }
-        findProperties(prefix + "." + field.getName(), field.get(object), properties);
+        if(String.class == field.getType()){
+            properties.put(prefix + "." + field.getName(), value);
+            return;
+        }
+        findProperties(prefix + "." + field.getName(), value, properties);
     }
 }
 
