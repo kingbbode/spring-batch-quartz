@@ -19,6 +19,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -27,10 +28,10 @@ import java.util.*;
  */
 public class BatchHelper {
     private static final String JOB_NAME_KEY = "job";
-    private static final String JOB_PARAMETERS_NAME_KEY = "jobParameters";
-    private static final String JOB_PARAMETERS_QUARTZ_KEY = "quartz";
-    private static final String TOKEN = "|";
-    private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY);
+    private static final String JOB_PARAMETERS_NAME_KEY_BY_CONFIG = "jobParameters";
+    private static final String JOB_PARAMETERS_NAME_KEY_BY_TRIGGER = "triggerJobParameters";
+    private static final String JOB_PARAMETERS_INSTANCE_ID_KEY = "InstanceId";
+    private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY_BY_CONFIG);
 
     public static JobDetailFactoryBeanBuilder jobDetailFactoryBeanBuilder() {
         return new JobDetailFactoryBeanBuilder();
@@ -52,6 +53,8 @@ public class BatchHelper {
 
     /**
      * quartz JobDataMap 로부터 JobParameters 를 추출
+     *
+     * 이 때 JobDataMap 은 JobDetail 의 JobDataMap 과 Trigger 의 JobDataMap 이 합쳐진 JobDataMap.
      * 
      * Spring Batch Job 은 Job Name 과 Job Parameter 로 동일 잡을 확인하므로, 
      * 실행 시간을 적재하여 새로운 Job Parameter 를 생성하여 반환.
@@ -61,10 +64,21 @@ public class BatchHelper {
      */
     public static JobParameters getJobParameters(JobExecutionContext context) throws SchedulerException {
         JobDataMap jobDataMap = context.getMergedJobDataMap();
-        return new JobParametersBuilder((JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY))
-                .addString(JOB_PARAMETERS_QUARTZ_KEY, context.getScheduler().getSchedulerName() + TOKEN + context.getJobDetail().getKey().getGroup() + TOKEN + context.getJobDetail().getKey().getName())
-                .addLong("timestamp", System.currentTimeMillis())
+        return new JobParametersBuilder(
+                    getMergedJobParameters(
+                            (JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY_BY_CONFIG),
+                            (JobParameters) jobDataMap.get(JOB_PARAMETERS_NAME_KEY_BY_TRIGGER)
+                    )
+                )
+                .addString(JOB_PARAMETERS_INSTANCE_ID_KEY, context.getScheduler().getSchedulerInstanceId())
                 .toJobParameters();
+    }
+
+    private static JobParameters getMergedJobParameters(JobParameters jobParameters1, JobParameters jobParameters2) {
+        Map<String, JobParameter> merged = new HashMap<>();
+        merged.putAll(!StringUtils.isEmpty(jobParameters1)?jobParameters1.getParameters():Collections.EMPTY_MAP);
+        merged.putAll(!StringUtils.isEmpty(jobParameters2)?jobParameters2.getParameters():Collections.EMPTY_MAP);
+        return new JobParameters(merged);
     }
 
     /**
@@ -148,7 +162,7 @@ public class BatchHelper {
             if(!map.containsKey(JOB_NAME_KEY)) {
                 throw new RuntimeException("Not Found Job Name.");
             }
-            map.put(JOB_PARAMETERS_NAME_KEY, jobParametersBuilder.toJobParameters());
+            map.put(JOB_PARAMETERS_NAME_KEY_BY_CONFIG, jobParametersBuilder.toJobParameters());
 
             JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
             jobDetailFactory.setJobClass(BatchJobExecutor.class);
