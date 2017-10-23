@@ -19,6 +19,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
@@ -36,10 +37,8 @@ public class ExampleJobConfiguration {
 
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
-    
-    
-    
 
+    @Autowired
     public ExampleJobConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
@@ -114,8 +113,6 @@ public class ExampleJobConfiguration {
     }
 
     private ItemWriter<String> exampleJob1Writer() {
-        return items -> {
-            items.stream().map(o -> "[" + JOB_NAME + "] " + o + "-write").forEach(log::info);
-        };
+        return items -> items.stream().map(o -> "[" + JOB_NAME + "] " + o + "-write").forEach(log::info);
     }
 }
