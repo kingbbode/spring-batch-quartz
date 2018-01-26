@@ -31,6 +31,7 @@ public class BatchHelper {
     private static final String JOB_PARAMETERS_NAME_KEY_BY_CONFIG = "jobParameters";
     private static final String JOB_PARAMETERS_NAME_KEY_BY_TRIGGER = "triggerJobParameters";
     private static final String JOB_PARAMETERS_INSTANCE_ID_KEY = "InstanceId";
+    private static final String JOB_PARAMETERS_TIMESTAMP_KEY = "timestamp";
     private static final List<String> KEYWORDS = Arrays.asList(JOB_NAME_KEY, JOB_PARAMETERS_NAME_KEY_BY_CONFIG);
 
     public static JobDetailFactoryBeanBuilder jobDetailFactoryBeanBuilder() {
@@ -71,6 +72,7 @@ public class BatchHelper {
                     )
                 )
                 .addString(JOB_PARAMETERS_INSTANCE_ID_KEY, context.getScheduler().getSchedulerInstanceId())
+                .addLong(JOB_PARAMETERS_TIMESTAMP_KEY, System.currentTimeMillis())
                 .toJobParameters();
     }
 
